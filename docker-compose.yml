@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  thread:
+    build: .
+    container_name: cable
+    ports:
+      - "9004:9004"
+    environment:
+      SPRING_DATASOURCE_URL: ${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true
+    name: project_backend
