@@ -102,8 +102,8 @@ public class DynamicExcelExportService {
 
             ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + sqlQuery.getName() + ".xlsx")
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .contentLength(out.size())
                     .body(new InputStreamResource(in));
 
         } catch (Exception e) {

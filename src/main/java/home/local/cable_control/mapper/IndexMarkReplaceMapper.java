@@ -162,7 +162,13 @@ public class IndexMarkReplaceMapper {
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .collect(Collectors.toSet());
-        addsMark = indexMarkReplaceRepository.findMarkByIndexes(entity.getIndex());
+        addsMark = indexMarkReplaceRepository.findMarkByIndexes(
+                entity.getIndex(),
+                entity.getLetterOutNum(),
+                entity.getLetterOutDate(),
+                entity.getLetterInNum(),
+                entity.getLetterInDate()
+        );
         addsMark.addAll(Arrays.stream(
                                 replaceMark
                                         .getOrDefault(entity.getIndex() + entity.getLetterOutNum() + entity.getLetterOutDate() + entity.getShip(), "")

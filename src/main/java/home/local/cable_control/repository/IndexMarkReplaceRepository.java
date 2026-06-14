@@ -12,9 +12,22 @@ import java.util.List;
 @Repository
 public interface IndexMarkReplaceRepository extends JpaRepository<IndexMarkReplace, Long> {
 
-
-    @Query("select i.markReplace from IndexMarkReplace i where i.index = :index")
-    List<String> findMarkByIndexes(@Param("index") String index);
+    @Query("""
+                select i.markReplace
+                from IndexMarkReplace i
+                where i.index = :index
+                  and i.letterOutNum = :letterOutNum
+                  and i.letterOutDate = :letterOutDate
+                  and i.letterInNum = :letterInNum
+                  and i.letterInDate = :letterInDate
+            """)
+    List<String> findMarkByIndexes(
+            @Param("index") String index,
+            @Param("letterOutNum") String letterOutNum,
+            @Param("letterOutDate") String letterOutDate,
+            @Param("letterInNum") String letterInNum,
+            @Param("letterInDate") String letterInDate
+    );
 
     List<IndexMarkReplace> findByIndex(String index);
 
