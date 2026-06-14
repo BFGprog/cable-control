@@ -5,10 +5,7 @@ import home.local.cable_control.model.export.IndexMarkReplFomPars;
 import home.local.cable_control.repository.IndexMarkReplaceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -53,7 +50,16 @@ public class IndexMarkReplaceMapper {
     }
 
     private String getString(Cell cell) {
-        return cell == null ? null : formatter.formatCellValue(cell).trim();
+        if (cell == null) {
+            return null;
+        }
+        if (cell.getCellType() == CellType.NUMERIC &&
+                DateUtil.isCellDateFormatted(cell)) {
+            return cell.getLocalDateTimeCellValue()
+                    .toLocalDate()
+                    .format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        }
+        return formatter.formatCellValue(cell).trim();
     }
 
     private double getDouble(Cell cell) {
