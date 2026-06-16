@@ -61,7 +61,7 @@ public interface CableRepository extends JpaRepository<Cable, Long> {
              and w.status = 1
             left join (select distinct i.index
                ,string_agg(DISTINCT i.mark_old, chr(10) ORDER BY i.mark_old) as mark_old
-               ,string_agg(i.mark_replace, chr(10) ORDER BY i.mark_replace) as mark_replace
+               ,string_agg(DISTINCT i.mark_replace, chr(10) ORDER BY i.mark_replace) as mark_replace
                FROM index_mark_replace i
                where i.ship = '451'
                and i.status > 0
