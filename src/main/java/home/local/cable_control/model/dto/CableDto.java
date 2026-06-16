@@ -38,6 +38,7 @@ public class CableDto {
     private String devices;
     private String wareLength;
     private String wareNotes;
+    private String indexMarkReplace;
 
 
 }

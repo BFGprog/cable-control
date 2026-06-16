@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface SqlQueryRepository extends JpaRepository<SqlQuery, Long> {
-    List<SqlQuery> findAllByOrderByIdAsc();
+    List<SqlQuery> findAllByOrderByNumAscIdAsc();
 
 
 }

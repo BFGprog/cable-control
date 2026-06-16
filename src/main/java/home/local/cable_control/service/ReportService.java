@@ -19,7 +19,7 @@ public class ReportService {
     private final ReportMapper reportMapper;
 
     public List<Report> getReports() {
-        List<SqlQuery> listSqlQuery = sqlQueryRepository.findAllByOrderByIdAsc();
+        List<SqlQuery> listSqlQuery = sqlQueryRepository.findAllByOrderByNumAscIdAsc();
         return listSqlQuery.stream()
                 .map(reportMapper::sqlQueryToReport)
                 .toList();

@@ -88,7 +88,7 @@ public class CableExportService {
                     "Прибор откуда", "Помещение откуда", "Наименование помещения откуда",
                     "Наименование помещения куда", "Помещение куда", "Прибор куда",
                     "Признак М/МЕ", "Маршрут", "Схема",
-                    "Помещения", "Наименование помещений", "Приборы"
+                    "Помещения", "Наименование помещений", "Приборы", "Согласованные замены"
             };
 
             for (int i = 0; i < columns.length; i++) {
@@ -137,6 +137,7 @@ public class CableExportService {
                 col = createCell(row, col, dto.getRooms(), cellStyle, dateStyle);
                 col = createCell(row, col, dto.getRoomNames(), cellStyle, dateStyle);
                 col = createCell(row, col, dto.getDevices(), cellStyle, dateStyle);
+                col = createCell(row, col, dto.getIndexMarkReplace(), cellStyle, dateStyle);
             }
 /*
             for (int i = 0; i < columns.length; i++) {

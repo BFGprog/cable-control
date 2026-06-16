@@ -45,6 +45,7 @@ public class CableExportMapper {
         dto.setRooms(c.getRoomIn() + " - " + c.getRoomOut());
         dto.setRoomNames(c.getRoomNameIn() + " - " + c.getRoomNameOut());
         dto.setDevices(c.getDeviceIn() + " - " + c.getDeviceOut());
+        dto.setIndexMarkReplace(c.getIndexMarkReplace());
 
         return dto;
     }

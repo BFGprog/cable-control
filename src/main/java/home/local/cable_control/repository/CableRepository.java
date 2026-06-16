@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface CableRepository extends JpaRepository<Cable, Long> {
 
     Optional<Cable> findByIndex(String index);
+
     @Query("select c from Cable c where c.index in :indexes")
     List<Cable> findByIndexes(@Param("indexes") List<String> indexes);
 
@@ -21,7 +22,8 @@ public interface CableRepository extends JpaRepository<Cable, Long> {
             select
              string_agg(w.length ||'', '; ' ORDER BY w.length desc) wareLength
             ,string_agg(w.note, '; ' ORDER BY w.length desc) as wareNotes
-            ,string_agg(imr.mark_replace, '; ' ORDER BY imr.mark_replace) indexMarkRepl
+            ,'Было: ' || string_agg(i.mark_old, chr(10) ORDER BY i.mark_old) || chr(10)
+               || 'Замены: ' || string_agg(i.mark_replace, chr(10) ORDER BY i.mark_replace) indexMarkReplace
             ,row_number() over (order by c.id) id
             ,c.complete
             ,c.created_date as createdDate
@@ -57,9 +59,14 @@ public interface CableRepository extends JpaRepository<Cable, Long> {
              and c.tighten_date is null
              and c.status = false
              and w.status = 1
-            left join index_mark_replace imr on imr.index = c.index
-             and imr.ship like '%451%'
-             and imr.status > 0
+            left join (select distinct i.index
+               ,string_agg(DISTINCT i.mark_old, chr(10) ORDER BY i.mark_old) as mark_old
+               ,string_agg(i.mark_replace, chr(10) ORDER BY i.mark_replace) as mark_replace
+               FROM index_mark_replace i
+               where i.ship = '451'
+               and i.status > 0
+               group by i.index
+               ) i on i.index = c.index
             group by c.id
             """, nativeQuery = true)
     List<CableExport> findAllCableExport();

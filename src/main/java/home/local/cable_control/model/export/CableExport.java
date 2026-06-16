@@ -39,4 +39,5 @@ public interface CableExport {
     String getTinnedCopperBraid();
     String getTinnedCopperBraidAdded();
     String getTypeMOrMe();
+    String getIndexMarkReplace();
 }
