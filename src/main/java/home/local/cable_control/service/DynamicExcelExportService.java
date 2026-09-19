@@ -1,13 +1,16 @@
 package home.local.cable_control.service;
 
 import home.local.cable_control.model.SqlQuery;
+import home.local.cable_control.model.auxiliary.ReportRequest;
 import home.local.cable_control.model.dto.QueryResult;
 import home.local.cable_control.repository.SqlQueryRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +18,12 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class DynamicExcelExportService {
 
@@ -27,10 +33,24 @@ public class DynamicExcelExportService {
     public ResponseEntity<InputStreamResource> export(Long queryId) {
         SqlQuery sqlQuery = sqlQueryRepository.findById(queryId)
                 .orElseThrow(() -> new RuntimeException("Запрос не найден"));
+        String nameDoc = sqlQuery.getName();
         QueryResult result = queryService.getAlias(sqlQuery.getQuery());
+        return createdDoc(result, nameDoc);
+    }
 
+    public ResponseEntity<InputStreamResource> export(ReportRequest request) {
+
+        SqlQuery sqlQuery = sqlQueryRepository.findById(request.getQueryId())
+                .orElseThrow(() -> new RuntimeException("Запрос не найден"));
+        String nameDoc = sqlQuery.getName();
+        QueryResult result = queryService.getAlias(sqlQuery.getQuery(), sqlQuery.getParams(), request.getParams());
+        log.info("print {} - {}", request.getQueryId(), nameDoc);
+        return createdDoc(result, nameDoc);
+    }
+
+    public ResponseEntity<InputStreamResource> createdDoc(QueryResult result, String nameDoc) {
         try (Workbook workbook = new XSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet(sqlQuery.getName());
+            Sheet sheet = workbook.createSheet(nameDoc);
             int columnCount = result.getColumns().size();
             int rowCount = result.getRows().size();
 
@@ -101,7 +121,19 @@ public class DynamicExcelExportService {
             workbook.write(out);
 
             ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+            /*return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .contentLength(out.size())
+                    .body(new InputStreamResource(in));*/
+            String encodedFileName = URLEncoder
+                    .encode(nameDoc + ".xlsx", StandardCharsets.UTF_8)
+                    .replace("+", "%20");
+
             return ResponseEntity.ok()
+                    .header(
+                            HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename*=UTF-8''" + encodedFileName
+                    )
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .contentLength(out.size())
                     .body(new InputStreamResource(in));

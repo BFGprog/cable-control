@@ -10,6 +10,7 @@ public class ReportMapper {
         Report report = new Report();
         report.setId(sqlQuery.getId());
         report.setName(sqlQuery.getName());
+        report.setType(sqlQuery.getType());
         return report;
     }
 }

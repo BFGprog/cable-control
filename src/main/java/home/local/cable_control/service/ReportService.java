@@ -15,15 +15,15 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class ReportService {
-    private final SqlQueryRepository sqlQueryRepository;
+    private final SqlQueryService sqlQueryService;
     private final ReportMapper reportMapper;
-
+/*
     public List<Report> getReports() {
-        List<SqlQuery> listSqlQuery = sqlQueryRepository.findAllByOrderByNumAscIdAsc();
+        List<SqlQuery> listSqlQuery = sqlQueryService.getSqlQueries();
         return listSqlQuery.stream()
                 .map(reportMapper::sqlQueryToReport)
                 .toList();
-    }
+    }*/
 
 
 }
