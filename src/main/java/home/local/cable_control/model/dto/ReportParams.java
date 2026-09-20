@@ -1,20 +1,16 @@
 package home.local.cable_control.model.dto;
 
-import home.local.cable_control.model.SqlQueryParam;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
 @Data
 @RequiredArgsConstructor
-public class Report {
+public class ReportParams {
 
     private Long id;
+    private String code;
     private String name;
     private Integer num;
     private Integer type;
     private String query;
-    private List<ReportParams> params;
-
 }

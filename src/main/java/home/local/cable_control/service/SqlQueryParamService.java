@@ -31,9 +31,8 @@ public class SqlQueryParamService {
     }
 
     public SqlQueryParam update(Long id, Long paramId, SqlQueryParamAdd sqlQueryParamAdd) {
-        SqlQuery sqlQuery = sqlQueryService.findById(id);
-        SqlQueryParam sqlQueryParam = sqlQueryParamRepository.findById(paramId)
-                .orElseThrow(() -> new RuntimeException("Не найден параметр: " + paramId));
+        SqlQueryParam sqlQueryParam = sqlQueryParamRepository.findByIdAndSqlQueryId(paramId, id)
+                .orElseThrow(() -> new RuntimeException("Параметр " + paramId + " не найден в отчете " + id));
 
         sqlQueryParam.setCode(sqlQueryParamAdd.getCode());
         sqlQueryParam.setName(sqlQueryParamAdd.getName());
@@ -44,11 +43,10 @@ public class SqlQueryParamService {
     }
 
     public void replace(Long id, Long paramId) {
-        SqlQuery sqlQuery = sqlQueryService.findById(id);
-        SqlQueryParam sqlQueryParam = sqlQueryParamRepository.findById(paramId)
-                .orElseThrow(() -> new RuntimeException("Не найден параметр: " + paramId));
-        sqlQueryParamRepository.deleteById(id);
-        log.info("Удален sqlQueryParam: " + id);
+        SqlQueryParam sqlQueryParam = sqlQueryParamRepository.findByIdAndSqlQueryId(paramId, id)
+                .orElseThrow(() -> new RuntimeException("Параметр " + paramId + " не найден в отчете " + id));
+        sqlQueryParamRepository.deleteById(paramId);
+        log.info("Удален sqlQueryParam: " + paramId);
     }
 
 

@@ -29,6 +29,8 @@ public class ExcelController {
     private final WarehouseService warehouseService;
     private final IndexMarkReplaceService indexMarkReplaceService;
     private final CableJournalParserService cableJournalParserService;
+    private final CableJournalService cableJournalService;
+    private final ShipService shipService;
     private final CableScheduleService cableScheduleService;
 
     @Value("${app.upload.zatichka1}")
@@ -129,10 +131,10 @@ public class ExcelController {
         }
     }
 
-    @PostMapping("/uploadCableDocument")
+    @PostMapping(value = "/uploadCableDocument", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadPreparedCableDocument(@RequestParam("file") MultipartFile file,
                                                          @RequestParam("code") String code,
-                                                         @RequestParam("parameters") DocumentParameters parameters) {
+                                                         @RequestPart("parameters") DocumentParameters parameters) {
 
         if (!password1.equals(code)) {
             return ResponseEntity.status(403).body("Wrong password");
@@ -147,5 +149,20 @@ public class ExcelController {
         }
     }
 
+    @GetMapping("/download/journal")
+    public ResponseEntity<?> getCableJournals(@RequestParam String code) {
+        if (!this.password1.equals(code)) {
+            return ResponseEntity.status(403).body("Wrong password");
+        }
+        return ResponseEntity.ok(cableJournalService.getCableJournals());
+    }
+
+    @GetMapping("/download/ship")
+    public ResponseEntity<?> getShips(@RequestParam String code) {
+        if (!this.password1.equals(code)) {
+            return ResponseEntity.status(403).body("Wrong password");
+        }
+        return ResponseEntity.ok(shipService.getShips());
+    }
 
 }

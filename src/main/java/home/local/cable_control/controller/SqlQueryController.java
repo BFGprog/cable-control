@@ -2,13 +2,11 @@ package home.local.cable_control.controller;
 
 
 import home.local.cable_control.model.auxiliary.SqlQueryAdd;
-import home.local.cable_control.service.ReportService;
 import home.local.cable_control.service.SqlQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,7 +34,7 @@ public class SqlQueryController {
         return ResponseEntity.ok(sqlQueryService.getSqlQueries());
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping
     public ResponseEntity<?> created(@RequestBody SqlQueryAdd sqlQueryAdd,
                                      @RequestParam("code") String code) {
         if (!password1.equals(code)) {
@@ -52,7 +50,7 @@ public class SqlQueryController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> update(@RequestBody Long id,
+    public ResponseEntity<?> update(@PathVariable Long id,
                                     @RequestBody SqlQueryAdd sqlQueryAdd,
                                     @RequestParam("code") String code) {
         if (!password1.equals(code)) {
@@ -68,8 +66,8 @@ public class SqlQueryController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> replace(@RequestBody Long id,
-                                     @RequestParam("code") String code) {
+    public ResponseEntity<?> delete(@PathVariable Long id,
+                                    @RequestParam("code") String code) {
         if (!password1.equals(code)) {
             return ResponseEntity.status(403).body("Wrong password");
         }

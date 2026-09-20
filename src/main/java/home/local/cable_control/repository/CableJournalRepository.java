@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface CableJournalRepository extends JpaRepository<CableJournal, Long> {
 
@@ -22,4 +24,6 @@ public interface CableJournalRepository extends JpaRepository<CableJournal, Long
     int updateActualStatusForAll(@Param("actualStatus") int actualStatus
             ,@Param("ship_id") long ship_id
             ,@Param("journalNum") String journalNum);
+
+    List<CableJournal> findAllByOrderByJournalNumAscIdAsc();
 }

@@ -1,12 +1,16 @@
 package home.local.cable_control.service;
 
+import home.local.cable_control.mapper.CableJournalMapper;
 import home.local.cable_control.model.CableJournal;
 import home.local.cable_control.model.auxiliary.DocumentParameters;
+import home.local.cable_control.model.dto.CableJournalDto;
 import home.local.cable_control.repository.CableJournalRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -15,7 +19,15 @@ import org.springframework.stereotype.Service;
 public class CableJournalService {
     private final ShipService shipService;
     private final CableJournalRepository cableJournalRepository;
+    private final CableJournalMapper cableJournalMapper;
 
+
+    public List<CableJournalDto> getCableJournals() {
+        List<CableJournal> cableJournals = cableJournalRepository.findAllByOrderByJournalNumAscIdAsc();
+        return cableJournals.stream()
+                .map(cableJournalMapper::toDto)
+                .toList();
+    }
 
     public CableJournal saveCableJournal(DocumentParameters parameters) {
 

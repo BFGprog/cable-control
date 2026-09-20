@@ -57,7 +57,7 @@ public class SqlQueryParamController {
     }
 
     @DeleteMapping("/{id}/param/{paramId}")
-    public ResponseEntity<?> replaceSqlQueryParam(@PathVariable Long id,
+    public ResponseEntity<?> delete(@PathVariable Long id,
                                                   @PathVariable Long paramId,
                                                   @RequestParam("code") String code) {
         if (!password1.equals(code)) {
