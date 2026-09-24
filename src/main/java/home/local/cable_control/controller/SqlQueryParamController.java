@@ -27,7 +27,7 @@ public class SqlQueryParamController {
     public ResponseEntity<?> createdSqlQueryParam(@PathVariable Long id,
                                                   @RequestBody SqlQueryParamAdd sqlQueryAdd,
                                                   @RequestParam("code") String code) {
-        if (!password1.equals(code)) {
+        if (!password2.equals(code)) {
             return ResponseEntity.status(403).body("Wrong password");
         }
         try {
@@ -44,7 +44,7 @@ public class SqlQueryParamController {
                                                  @PathVariable Long paramId,
                                                  @RequestBody SqlQueryParamAdd sqlQueryAdd,
                                                  @RequestParam("code") String code) {
-        if (!password1.equals(code)) {
+        if (!password2.equals(code)) {
             return ResponseEntity.status(403).body("Wrong password");
         }
         try {
@@ -60,7 +60,7 @@ public class SqlQueryParamController {
     public ResponseEntity<?> delete(@PathVariable Long id,
                                                   @PathVariable Long paramId,
                                                   @RequestParam("code") String code) {
-        if (!password1.equals(code)) {
+        if (!password2.equals(code)) {
             return ResponseEntity.status(403).body("Wrong password");
         }
         try {

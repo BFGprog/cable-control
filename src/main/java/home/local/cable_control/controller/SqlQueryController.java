@@ -37,7 +37,7 @@ public class SqlQueryController {
     @PostMapping
     public ResponseEntity<?> created(@RequestBody SqlQueryAdd sqlQueryAdd,
                                      @RequestParam("code") String code) {
-        if (!password1.equals(code)) {
+        if (!password2.equals(code)) {
             return ResponseEntity.status(403).body("Wrong password");
         }
         try {
@@ -53,7 +53,7 @@ public class SqlQueryController {
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @RequestBody SqlQueryAdd sqlQueryAdd,
                                     @RequestParam("code") String code) {
-        if (!password1.equals(code)) {
+        if (!password2.equals(code)) {
             return ResponseEntity.status(403).body("Wrong password");
         }
         try {
@@ -68,7 +68,7 @@ public class SqlQueryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id,
                                     @RequestParam("code") String code) {
-        if (!password1.equals(code)) {
+        if (!password2.equals(code)) {
             return ResponseEntity.status(403).body("Wrong password");
         }
         try {

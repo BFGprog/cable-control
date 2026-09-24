@@ -5,6 +5,7 @@ import home.local.cable_control.model.documentdto.CableRowTemp;
 import home.local.cable_control.model.dto.QueryResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.poifs.filesystem.FileMagic;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
@@ -192,6 +193,23 @@ public class CableJournalParserService {
     }
 
     public List<List<String>> readDocument(InputStream inputStream, String fileName) throws IOException {
+        InputStream checkedInputStream = FileMagic.prepareToCheckMagic(inputStream);
+        FileMagic fileMagic = FileMagic.valueOf(checkedInputStream);
+
+        switch (fileMagic) {
+            case OOXML:
+                log.info("readDocx");
+                return readDocx(checkedInputStream);
+            case OLE2:
+                log.info("readDoc");
+                return readDoc(checkedInputStream);
+            default:
+                throw new IllegalArgumentException(
+                        "Файл не является корректным Word документом: " + fileName
+                );
+        }
+
+        /*
         String name = fileName.toLowerCase();
         if (name.endsWith(".docx")) {
             return readDocx(inputStream);
@@ -199,7 +217,7 @@ public class CableJournalParserService {
         if (name.endsWith(".doc")) {
             return readDoc(inputStream);
         }
-        throw new IllegalArgumentException("Поддерживаются только .doc и .docx");
+        throw new IllegalArgumentException("Поддерживаются только .doc и .docx");*/
     }
 
     private List<List<String>> readDocx(InputStream inputStream) throws IOException {
@@ -330,17 +348,18 @@ public class CableJournalParserService {
         return row;
     }
 
-    private List<String> getColumns() {
+    private List<String> getColumns() { //[1-ГС-115, СПпВЭнг-БГ 3Х2Х0.75, null, 0.4, null, 1-ГС236, 03401, Электростанция, Электростанция, 03401, 1-ГС235, МЕ, , null, null, null, null, 16450.362642.001Э4, нет]
+        //[1-У-184, СПпВЭнг-БГ 2Х2Х0.75, 3.0, null, null, С.07(ГРУ 1), 03401, Электростанция, Аппаратная навигационного оборудов, 03902, R-U-3-AD (A35, М, ПМЛ 10Х16, ПМЛ ДВОЙНАЯ, null, null, null, 16450.362653.001Э4, нет]
         return List.of("Индекс"
                 , "Марка"
                 , "Длина в помещении"
                 , "Длина проектная"
                 , "Ограничение по длине"
                 , "Прибор откуда"
-                , "Наименование помещения откуда"
                 , "Номер помещения откуда"
-                , "Номер помещения куда"
+                , "Наименование помещения откуда"
                 , "Наименование помещения куда"
+                , "Номер помещения куда"
                 , "Прибор куда"
                 , "Признак М/МЕ"
                 , "Плетенка марка и размер"
