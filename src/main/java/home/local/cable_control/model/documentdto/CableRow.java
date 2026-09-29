@@ -23,6 +23,7 @@ public class CableRow {
     private String complete;
     private String note;
     private String electricalSchematic;
+    private Integer quantity;
 
 
 }

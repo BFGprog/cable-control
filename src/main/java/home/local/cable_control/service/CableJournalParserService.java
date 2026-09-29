@@ -16,7 +16,9 @@ import org.apache.poi.hwpf.usermodel.Range;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -72,8 +74,8 @@ public class CableJournalParserService {
                             && !flag) {
                         mergeTemporaryData(cableRow, cableRowTemp);
 
-                        rowsObject.add(toObject(cableRow));
-                        //cableRowList.add(cableRow);
+                        //rowsObject.add(toObject(cableRow));
+                        cableRowList.add(cableRow);
 
                         cableRow = new CableRow();
                         cableRowTemp = new CableRowTemp();
@@ -149,7 +151,15 @@ public class CableJournalParserService {
 
             }
         }
-        return rowsObject;
+        if (!flag) {
+            mergeTemporaryData(cableRow, cableRowTemp);
+            cableRowList.add(cableRow);
+        }
+        calculateQuantity(cableRowList);
+
+        return cableRowList.stream()
+                .map(this::toObject)
+                .toList();
     }
 
     private void mergeTemporaryData(CableRow cableRow, CableRowTemp cableRowsTemp) {
@@ -325,6 +335,7 @@ public class CableJournalParserService {
     private List<Object> toObject(CableRow cableRow) {
         List<Object> row = new ArrayList<>();
 
+        row.add(cableRow.getQuantity());
         row.add(cableRow.getIndex());
         row.add(cableRow.getMark());
         row.add(cableRow.getRoomLength());
@@ -350,7 +361,8 @@ public class CableJournalParserService {
 
     private List<String> getColumns() { //[1-ГС-115, СПпВЭнг-БГ 3Х2Х0.75, null, 0.4, null, 1-ГС236, 03401, Электростанция, Электростанция, 03401, 1-ГС235, МЕ, , null, null, null, null, 16450.362642.001Э4, нет]
         //[1-У-184, СПпВЭнг-БГ 2Х2Х0.75, 3.0, null, null, С.07(ГРУ 1), 03401, Электростанция, Аппаратная навигационного оборудов, 03902, R-U-3-AD (A35, М, ПМЛ 10Х16, ПМЛ ДВОЙНАЯ, null, null, null, 16450.362653.001Э4, нет]
-        return List.of("Индекс"
+        return List.of("Количество"
+                , "Индекс"
                 , "Марка"
                 , "Длина в помещении"
                 , "Длина проектная"
@@ -369,6 +381,23 @@ public class CableJournalParserService {
                 , "Примечание"
                 , "Схема"
                 , "Аннулирован" );
+    }
+
+    private void calculateQuantity(List<CableRow> cableRows) {
+        Map<String, Integer> quantityByIndex = new HashMap<>();
+
+        for (CableRow cableRow : cableRows) {
+            quantityByIndex.merge(
+                    cableRow.getIndex(),
+                    1,
+                    Integer::sum
+            );
+        }
+        for (CableRow cableRow : cableRows) {
+            cableRow.setQuantity(
+                    quantityByIndex.get(cableRow.getIndex())
+            );
+        }
     }
 
 }
