@@ -113,6 +113,11 @@ public class CableJournalParserService {
 
                             }
                         }
+                        if (row.size() > 17) {
+                            if (normalizeCyrillic(row.get(17)).startsWith("П")) {
+                                cableRow.setTinnedCopperBraid(cableRow.getTinnedCopperBraid() + " " + row.get(17).trim());
+                            }
+                        }
                     }
                     if (flag) {
                         if (row.get(2).isBlank()) {
@@ -168,11 +173,11 @@ public class CableJournalParserService {
 
         for (int i = 0; i < cableRowsTemp.getMark().size(); i++) {
             String mark = cableRowsTemp.getMark().get(i);
-            if (mark != null && !mark.isEmpty() && Character.isDigit(mark.charAt(0))) {
+            //if (mark != null && !mark.isEmpty() && Character.isDigit(mark.charAt(0))) {
                 cableRow.setMark(cableRow.getMark() + " " + mark);
-            } else {
-                cableRow.setMark(cableRow.getMark() + cableRowsTemp.getMark().get(i));
-            }
+            //} else {
+            //    cableRow.setMark(cableRow.getMark() + cableRowsTemp.getMark().get(i));
+            //}
         }
 
         for (int i = 0; i < cableRowsTemp.getType().size(); i++) {

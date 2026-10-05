@@ -119,7 +119,7 @@ public class ExcelController {
     public ResponseEntity<?> uploadCableWordDocument(@RequestParam("file") MultipartFile file,
                                                      @RequestParam("code") String code) {
 
-        if (!password1.equals(code)) {
+        if (!password2.equals(code)) {
             return ResponseEntity.status(403).body("Wrong password");
         }
         try {
