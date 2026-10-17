@@ -8,11 +8,13 @@ import java.util.List;
 @Data
 public class CableRowTemp {
 
-    private List<String> type = new ArrayList<>();;
-    private List<String> mark = new ArrayList<>();;
+    private List<String> type = new ArrayList<>();
+    private List<String> mark = new ArrayList<>();
+    private String deviceIn;
     private String roomNameIn;
     private String roomNameOut;
-    private List<String> tinnedCopperBraid = new ArrayList<>();;
-    private List<String> note = new ArrayList<>();;
+    private String deviceOut;
+    private List<String> tinnedCopperBraid = new ArrayList<>();
+    private List<String> note = new ArrayList<>();
 
 }

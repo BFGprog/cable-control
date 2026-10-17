@@ -15,10 +15,7 @@ import org.apache.poi.hwpf.usermodel.Range;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -86,14 +83,24 @@ public class CableJournalParserService {
                     if (flagTemp) {
                         if (row.size() > 18) {
                             cableRowTemp.getType().add((row.get(2).trim()));
-                            cableRowTemp.getMark().add((row.get(3).trim()));
-                            if (!row.get(18).trim().equals("УЧТЕН")) {
+                            if (row.get(3) != null && !row.get(3).trim().isEmpty()) {
+                                cableRowTemp.getMark().add((row.get(3).trim()));
+                            }
+                            if (!row.get(18).trim().equals("УЧТЕН") && !row.get(18).matches("(?i)[аa]\\d+") && row.get(18) != null && !row.get(18).trim().isEmpty()) {
                                 cableRowTemp.getTinnedCopperBraid().add(row.get(18).trim());
                             }
+                            if (countRowTemp == 0 && cableRow.getDeviceIn().length() == 13) {
+                                cableRowTemp.setDeviceIn(row.get(9));
+                            }
+                            if (countRowTemp == 0 && cableRow.getDeviceOut().length() == 13) {
+                                cableRowTemp.setDeviceOut(row.get(12));
+                            }
                             countRowTemp++;
-                        } else {
+                        } else if (row.size() >= 7) {
                             cableRowTemp.getType().add((row.get(2).trim()));
-                            cableRowTemp.getMark().add((row.get(3).trim()));
+                            if (row.get(3) != null && !row.get(3).trim().isEmpty()) {
+                                cableRowTemp.getMark().add((row.get(3).trim()));
+                            }
                             if (countRowTemp > 0) {
 
                                 String roomNameIn = cableRowTemp.getRoomNameIn();
@@ -111,13 +118,18 @@ public class CableJournalParserService {
                                     cableRowTemp.setRoomNameOut(cableRowTemp.getRoomNameOut() + row.get(7).trim());
                                 }
 
+                                /*if (row.size() >= 9) {
+                                    if (normalizeCyrillic(row.get(9)).startsWith("П")) {
+                                        cableRowTemp.getTinnedCopperBraid().add(row.get(9).trim());
+                                    }
+                                }*/
                             }
-                        }
+                        }/*
                         if (row.size() > 17) {
                             if (normalizeCyrillic(row.get(17)).startsWith("П")) {
                                 cableRow.setTinnedCopperBraid(cableRow.getTinnedCopperBraid() + " " + row.get(17).trim());
                             }
-                        }
+                        }*/
                     }
                     if (flag) {
                         if (row.get(2).isBlank()) {
@@ -132,7 +144,11 @@ public class CableJournalParserService {
                         cableRow.setRoomOut(row.get(11).trim());
                         cableRow.setDeviceOut(row.get(12).trim());
                         if (row.size() > 18) {
-                            cableRow.setTinnedCopperBraid(row.get(18).trim());
+                            if (row.get(18).matches("(?i)[аa]\\d+")) {
+                                cableRow.setTinnedCopperBraid("");
+                            } else {
+                                cableRow.setTinnedCopperBraid(row.get(18).trim());
+                            }
                         }
                         String index = cableRow.getIndex();
                         if (index != null
@@ -170,14 +186,23 @@ public class CableJournalParserService {
     private void mergeTemporaryData(CableRow cableRow, CableRowTemp cableRowsTemp) {
         cableRow.setRoomNameOut(cableRowsTemp.getRoomNameOut());
         cableRow.setRoomNameIn(cableRowsTemp.getRoomNameIn());
+        if (cableRowsTemp.getDeviceIn() != null && !cableRowsTemp.getDeviceIn().isEmpty()) {
+            cableRow.setDeviceIn(cableRow.getDeviceIn() + cableRowsTemp.getDeviceIn());
+        }
+        if (cableRowsTemp.getDeviceOut() != null && !cableRowsTemp.getDeviceOut().isEmpty()) {
+            cableRow.setDeviceOut(cableRow.getDeviceOut() + cableRowsTemp.getDeviceOut());
+        }
 
         for (int i = 0; i < cableRowsTemp.getMark().size(); i++) {
             String mark = cableRowsTemp.getMark().get(i);
-            //if (mark != null && !mark.isEmpty() && Character.isDigit(mark.charAt(0))) {
+            if (/*mark != null && !mark.isEmpty() && Character.isDigit(mark.charAt(0))
+                    ||*/ mark != null && !mark.isEmpty() && cableRow.getMark().equals(mark)
+                    || mark != null && !mark.isEmpty() && i == 0 && cableRow.getMark().length() < 13
+                    || mark != null && !mark.isEmpty() && i > 0 && cableRowsTemp.getMark().get(i - 1).length() < 13) {
                 cableRow.setMark(cableRow.getMark() + " " + mark);
-            //} else {
-            //    cableRow.setMark(cableRow.getMark() + cableRowsTemp.getMark().get(i));
-            //}
+            } else if (mark != null && !mark.isEmpty()) {
+                cableRow.setMark(cableRow.getMark() + cableRowsTemp.getMark().get(i));
+            }
         }
 
         for (int i = 0; i < cableRowsTemp.getType().size(); i++) {
@@ -205,6 +230,11 @@ public class CableJournalParserService {
         for (int i = 0; i < cableRowsTemp.getTinnedCopperBraid().size(); i++) {
             cableRow.setTinnedCopperBraid((cableRow.getTinnedCopperBraid() + " " + cableRowsTemp.getTinnedCopperBraid().get(i)).trim());
         }
+        if (cableRow.getMark().equals("КсСГОнг(Д)1004Х2Х0.52")) {
+            cableRow.setMark("КсСГОнг(Д)100 4Х2Х0.52");
+        } else if (cableRow.getMark().equals("КсСГОнг(Д)1002Х2Х0.52")) {
+            cableRow.setMark("КсСГОнг(Д)100 2Х2Х0.52");
+        }
     }
 
     public List<List<String>> readDocument(InputStream inputStream, String fileName) throws IOException {
@@ -213,10 +243,10 @@ public class CableJournalParserService {
 
         switch (fileMagic) {
             case OOXML:
-                log.info("readDocx");
+                log.info("readDocx ");
                 return readDocx(checkedInputStream);
             case OLE2:
-                log.info("readDoc");
+                log.info("readDoc ");
                 return readDoc(checkedInputStream);
             default:
                 throw new IllegalArgumentException(
@@ -385,7 +415,7 @@ public class CableJournalParserService {
                 , "Комплектно"
                 , "Примечание"
                 , "Схема"
-                , "Аннулирован" );
+                , "Аннулирован");
     }
 
     private void calculateQuantity(List<CableRow> cableRows) {
