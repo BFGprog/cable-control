@@ -4,6 +4,7 @@ services:
   thread:
     build: .
     container_name: cable
+    restart: unless-stopped
     ports:
       - "9004:9004"
     environment:

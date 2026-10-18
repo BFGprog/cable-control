@@ -54,15 +54,14 @@ public class CableJournalParserService {
 
             if (row.size() > 2) {
                 if (row.get(2).startsWith("16450")) {
-                    electricalSchematic = row.get(2).trim().split("\\s+")[0];
-                    ;
+                    electricalSchematic = row.get(2).split("\\s+")[0];
                 }
             }
             if (row.size() < 11) {
                 continue;
             }
             try {
-                if (Integer.parseInt(row.get(1).trim()) > 0 && !row.get(2).trim().equals("2")) {
+                if (Integer.parseInt(row.get(1)) > 0 && !row.get(2).equals("2")) {
 
                     if (!row.get(2).isBlank()
                             && row.size() >= 18
@@ -81,25 +80,33 @@ public class CableJournalParserService {
                         countRowTemp = 0;
                     }
                     if (flagTemp) {
-                        if (row.size() > 18) {
-                            cableRowTemp.getType().add((row.get(2).trim()));
-                            if (row.get(3) != null && !row.get(3).trim().isEmpty()) {
-                                cableRowTemp.getMark().add((row.get(3).trim()));
+                        countRowTemp++;
+                        if (row.size() >= 17) {
+                            if (isNotBlank(row.get(2))) {
+                                cableRowTemp.getType().add((row.get(2)));
                             }
-                            if (!row.get(18).trim().equals("УЧТЕН") && !row.get(18).matches("(?i)[аa]\\d+") && row.get(18) != null && !row.get(18).trim().isEmpty()) {
-                                cableRowTemp.getTinnedCopperBraid().add(row.get(18).trim());
+                            if (isNotBlank(row.get(3))) {
+                                cableRowTemp.getMark().add((row.get(3)));
                             }
-                            if (countRowTemp == 0 && cableRow.getDeviceIn().length() == 13) {
+                            if (!row.get(row.size() - 2).equals("УЧТЕН") && !row.get(row.size() - 2).matches("(?i)[аa]\\d+") && isNotBlank(row.get(row.size() - 2))) {
+                                cableRowTemp.getTinnedCopperBraid().add(row.get(row.size() - 2));
+                            }
+                            if (countRowTemp == 1 && cableRow.getDeviceIn().length() >= 13) {
                                 cableRowTemp.setDeviceIn(row.get(9));
+                            } else if (countRowTemp == 1 && (cableRow.getDeviceIn() + " ").length() >= 13) {
+                                cableRowTemp.setDeviceIn(" " + row.get(9));
                             }
-                            if (countRowTemp == 0 && cableRow.getDeviceOut().length() == 13) {
+                            if (countRowTemp == 1 && (cableRow.getDeviceOut()).length() >= 13) {
                                 cableRowTemp.setDeviceOut(row.get(12));
+                            } else if (countRowTemp == 1 && (cableRow.getDeviceOut() + " ").length() >= 13) {
+                                cableRowTemp.setDeviceOut(" " + row.get(12));
                             }
-                            countRowTemp++;
                         } else if (row.size() >= 7) {
-                            cableRowTemp.getType().add((row.get(2).trim()));
-                            if (row.get(3) != null && !row.get(3).trim().isEmpty()) {
-                                cableRowTemp.getMark().add((row.get(3).trim()));
+                            if (isNotBlank(row.get(2))) {
+                                cableRowTemp.getType().add((row.get(2)));
+                            }
+                            if (isNotBlank(row.get(3))) {
+                                cableRowTemp.getMark().add((row.get(3)));
                             }
                             if (countRowTemp > 0) {
 
@@ -107,15 +114,15 @@ public class CableJournalParserService {
                                 String roomNameOut = cableRowTemp.getRoomNameOut();
 
                                 if (roomNameIn == null || roomNameIn.isBlank()) {
-                                    cableRowTemp.setRoomNameIn(row.get(6).trim());
+                                    cableRowTemp.setRoomNameIn(row.get(6));
                                 } else {
-                                    cableRowTemp.setRoomNameIn(cableRowTemp.getRoomNameIn() + row.get(6).trim());
+                                    cableRowTemp.setRoomNameIn(cableRowTemp.getRoomNameIn() + row.get(6));
                                 }
 
                                 if (roomNameOut == null || roomNameOut.isBlank()) {
-                                    cableRowTemp.setRoomNameOut(row.get(7).trim());
+                                    cableRowTemp.setRoomNameOut(row.get(7));
                                 } else {
-                                    cableRowTemp.setRoomNameOut(cableRowTemp.getRoomNameOut() + row.get(7).trim());
+                                    cableRowTemp.setRoomNameOut(cableRowTemp.getRoomNameOut() + row.get(7));
                                 }
 
                                 /*if (row.size() >= 9) {
@@ -135,19 +142,19 @@ public class CableJournalParserService {
                         if (row.get(2).isBlank()) {
                             continue;
                         }
-                        cableRow.setIndex(row.get(2).trim());
-                        cableRow.setMark(row.get(3).trim());
-                        cableRow.setRoomLength(getDouble(row.get(4).trim()));
-                        cableRow.setDesignLength(getDouble(row.get(5).trim()));
-                        cableRow.setDeviceIn(row.get(9).trim());
-                        cableRow.setRoomIn(row.get(10).trim());
-                        cableRow.setRoomOut(row.get(11).trim());
-                        cableRow.setDeviceOut(row.get(12).trim());
-                        if (row.size() > 18) {
+                        cableRow.setIndex(row.get(2));
+                        cableRow.setMark(row.get(3));
+                        cableRow.setRoomLength(getDouble(row.get(4)));
+                        cableRow.setDesignLength(getDouble(row.get(5)));
+                        cableRow.setDeviceIn(row.get(9));
+                        cableRow.setRoomIn(row.get(10));
+                        cableRow.setRoomOut(row.get(11));
+                        cableRow.setDeviceOut(row.get(12));
+                        if (row.size() >= 18) {
                             if (row.get(18).matches("(?i)[аa]\\d+")) {
                                 cableRow.setTinnedCopperBraid("");
                             } else {
-                                cableRow.setTinnedCopperBraid(row.get(18).trim());
+                                cableRow.setTinnedCopperBraid(row.get(18));
                             }
                         }
                         String index = cableRow.getIndex();
@@ -228,7 +235,7 @@ public class CableJournalParserService {
         }
 
         for (int i = 0; i < cableRowsTemp.getTinnedCopperBraid().size(); i++) {
-            cableRow.setTinnedCopperBraid((cableRow.getTinnedCopperBraid() + " " + cableRowsTemp.getTinnedCopperBraid().get(i)).trim());
+            cableRow.setTinnedCopperBraid((cableRow.getTinnedCopperBraid() + " " + cableRowsTemp.getTinnedCopperBraid().get(i)));
         }
         if (cableRow.getMark().equals("КсСГОнг(Д)1004Х2Х0.52")) {
             cableRow.setMark("КсСГОнг(Д)100 4Х2Х0.52");
@@ -290,8 +297,7 @@ public class CableJournalParserService {
                 }
                 text = text
                         .replace("\r", "")
-                        .replace("\u0007", "")
-                        .trim();
+                        .replace("\u0007", "");
                 if (text.isBlank()) {
                     continue;
                 }
@@ -304,7 +310,7 @@ public class CableJournalParserService {
     private List<String> split(String text) {
         List<String> row = new ArrayList<>();
         for (String value : text.split("\\|")) {
-            row.add(value.trim());
+            row.add(value.trim().replaceAll("\\s{2,}", " "));
         }
         return row;
     }
@@ -435,4 +441,7 @@ public class CableJournalParserService {
         }
     }
 
+    private boolean isNotBlank(String text) {
+        return text != null && !text.isEmpty();
+    }
 }
