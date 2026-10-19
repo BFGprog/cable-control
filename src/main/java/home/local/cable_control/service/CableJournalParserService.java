@@ -88,8 +88,8 @@ public class CableJournalParserService {
                             if (isNotBlank(row.get(3))) {
                                 cableRowTemp.getMark().add((row.get(3)));
                             }
-                            if (!row.get(row.size() - 2).equals("УЧТЕН") && !row.get(row.size() - 2).matches("(?i)[аa]\\d+") && isNotBlank(row.get(row.size() - 2))) {
-                                cableRowTemp.getTinnedCopperBraid().add(row.get(row.size() - 2));
+                            if (!row.get(row.size() - 1).equals("УЧТЕН") && !row.get(row.size() - 1).matches("(?i)[аa]\\d+") && isNotBlank(row.get(row.size() - 1))) {
+                                cableRowTemp.getTinnedCopperBraid().add(row.get(row.size() - 1));
                             }
                             if (countRowTemp == 1 && cableRow.getDeviceIn().length() >= 13) {
                                 cableRowTemp.setDeviceIn(row.get(9));
