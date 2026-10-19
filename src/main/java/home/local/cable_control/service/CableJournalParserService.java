@@ -62,7 +62,6 @@ public class CableJournalParserService {
             }
             try {
                 if (Integer.parseInt(row.get(1)) > 0 && !row.get(2).equals("2")) {
-                    log.info(countRowTemp + "- " + cableRow.getIndex() + " - " + row.get(1) );
 
                     if (!row.get(2).isBlank()
                             && row.size() >= 18
@@ -84,7 +83,6 @@ public class CableJournalParserService {
                         countRowTemp++;
                         if (row.size() >= 17) {
 
-                            log.info(countRowTemp + "- " + cableRow.getIndex() + " " + row.size() + " " + row.get(row.size() - 2)+ ", " + row.get(row.size() - 1));
                             if (isNotBlank(row.get(2))) {
                                 cableRowTemp.getType().add((row.get(2)));
                             }
@@ -105,7 +103,6 @@ public class CableJournalParserService {
                                 cableRowTemp.setDeviceOut(" " + row.get(12));
                             }
                         } else if (row.size() >= 7) {
-                            log.info(countRowTemp + "- " + cableRow.getIndex());
                             if (isNotBlank(row.get(2))) {
                                 cableRowTemp.getType().add((row.get(2)));
                             }
