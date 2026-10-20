@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +29,7 @@ public class CableScheduleService {
 
     private static final int CHECK_CABLE_SIZE = 500;
 
+    @Transactional(rollbackFor = Exception.class)
     public void importCable(InputStream inputStream, String fileName, DocumentParameters parameters) throws IOException {
 
         List<CableSchedule> saveCable = new ArrayList<>(CHECK_CABLE_SIZE);
