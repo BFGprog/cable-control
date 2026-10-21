@@ -79,4 +79,8 @@ public class DataFormatterExcel {
         }
         return null;
     }
+
+    public boolean isNotBlank(String text) {
+        return text != null && !text.isEmpty();
+    }
 }

@@ -45,6 +45,9 @@ public class CableScheduleService {
             Sheet sheet = workbook.getSheetAt(0);
             for (Row row : sheet) {
                 if (row.getRowNum() == 0) continue;
+                if (!dataFormatterExcel.isNotBlank(dataFormatterExcel.getString(row.getCell(1)))) {
+                    continue;
+                }
 
                 CableSchedule cable = fromRow(row);
                 cable.setCableJournal(cableJournal);
